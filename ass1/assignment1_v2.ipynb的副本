@@ -1,0 +1,721 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# COMP3411/9418 21T0 Assignment 1\n",
+    "\n",
+    "- Lecturer: Anna Trofimova\n",
+    "- School of Computer Science and Engineering, UNSW Sydney\n",
+    "- Last Update 13th January at 18:00pm, 2021\n",
+    "$$\n",
+    "% macros\n",
+    "\\newcommand{\\indep}{\\perp \\!\\!\\!\\perp}\n",
+    "$$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Student:\n",
+    "Name, zID"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Submission\n",
+    "This interactive notebook contains the instructions to complete assignment 1; You should submit this notebook with the code and answers in one single file in .ipybn format with the name assignment1.ipybn. **Write your name and zID in the cell above** (to edit the markdown text double-click the cell).\n",
+    "\n",
+    "There is a maximum file size cap of 5MB, so make sure your submission does not exceed this size. The submitted notebook should contain all your source code and answers. You can add new cells and use markdown text to organise and explain your implementation/answer.\n",
+    "\n",
+    "Submit your files using give. On a CSE Linux machine, type the following on the command-line:"
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "metadata": {},
+   "source": [
+    "$ give cs3411 ass1 assignment1.ipynb"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The submission deadline is **22nd January at 11.59pm, 2021.**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Late Submission Policy \n",
+    "The penalty is set at 20% per late day. This is ceiling penalty, so if your submission is marked 60/100 and it was submitted two days late, you still get 60/100. If you submit 5 days later, then the penalty is 100% and your mark will be 0."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Plagiarism\n",
+    "This is an individual assignment. Remember that **all** work submitted for this assignment must be your own **individual** work and no code\n",
+    "sharing or copying is allowed. You may use code from the Internet only with suitable attribution\n",
+    "of the source in your program. **Do not use public code repositories as your code might be copied.** Keep in mind that sharing parts of assignment solutions is a form of plagiarism. All submitted assignments will be run through plagiarism detection software to detect similarities to other submissions. You should carefully read the UNSW policy on academic integrity and plagiarism. \n",
+    "\n",
+    "### **Note: if your life is falling apart and you are tempted to plagiarize as to not fail the assignment, please send me an email instead. I would rather grant you an extention than report you to the Student Conduct and Integrity Unit**."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Description\n",
+    "\n",
+    "This assignment consists of two problems presented in a puzzle game context. For the first problem, you will be implementing a path search problem along with common search algorithms and evaluating their properties. For the second problem, you will be exploring how to define and solve a constraint satisfaction problem. To implement the solutions, you have to use AIPython code that provides you with many implemented classes and examples of their use.  \n",
+    "\n",
+    "When working with a Jupyter notebook, you can edit the \\*.py files either in the Jupyter interface (in your browser) or with your favorite editor (e.g., PyCharm). Whenever you save a \\*.py file, the notebook will reload their content directly.\n",
+    "\n",
+    "The libraries that you can use (and need) in this assignment are  the following (run the cell below to import the libraries):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "ModuleNotFoundError",
+     "evalue": "No module named 'display'",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mModuleNotFoundError\u001b[0m                       Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-1-7fa91542fbdc>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mtime\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mnumpy\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 3\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0maipython\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msearchGeneric\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0;34m*\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      4\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0maipython\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msearchProblem\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0;34m*\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0maipython\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mcspProblem\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0;34m*\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/Documents/9814/aipython/searchGeneric.py\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      9\u001b[0m \u001b[0;31m# See: http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     10\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 11\u001b[0;31m \u001b[0;32mfrom\u001b[0m \u001b[0mdisplay\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mDisplayable\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mvisualize\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     12\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     13\u001b[0m \u001b[0;32mclass\u001b[0m \u001b[0mSearcher\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mDisplayable\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mModuleNotFoundError\u001b[0m: No module named 'display'"
+     ]
+    }
+   ],
+   "source": [
+    "import time\n",
+    "import numpy as np\n",
+    "from aipython.searchGeneric import *\n",
+    "from aipython.searchProblem import *\n",
+    "from aipython.cspProblem import *\n",
+    "from aipython.cspSearch import *"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "*Tip: If you placed the notebook correctly it should not give you any errors.*\n",
+    "\n",
+    "*If you think that there are other libraries you might need then send an email to the lecturer-in-charge to confirm.*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Part 1 - Heuristics [5 marks]\n",
+    "\n",
+    "This part of the assignment is based on a popular puzzle, Game of Fifteen, also known as 15-puzzle. The game consists of 15 numbered tiles on a four by four grid where one tile is missing. To solve the puzzle, the tiles must be moved so that they are ordered from 1 to 15. The goal state of the puzzle is defined as a multidimensional array of digits#, where 0 represents the missing tile, as follow:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "goal = [[1, 2, 3, 4], \n",
+    "        [5, 6, 7, 8], \n",
+    "        [9, 10, 11, 12], \n",
+    "        [13, 14, 15, 0]]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 1.1\n",
+    "Edit the code below to implement a search problem class representing the Game of Fifteen that uses heuristic based on Manhattan Distance (h1). The class must be implemented by extending the class Search\\_problem. \n",
+    "\n",
+    "Manhattan Distance between two points $p1$ at $(x1, y1)$ and $p2$ at $(x2, y2)$ is $d_{M}(p1, p2) = |x1 - x2| + |y1 - y2|$\n",
+    "\n",
+    "*Tip: If you have problems understanding how to overwrite methods take a look at the implementation of Search_problem_from_explicit_graph class in searchProblem.py*\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class GameFifteenProblem(Search_problem):\n",
+    "    \n",
+    "    def __init__(self, start, goal):\n",
+    "        return\n",
+    "    \n",
+    "    def start_node(self):\n",
+    "        \"\"\"Returns the start node\"\"\"\n",
+    "        return\n",
+    "    \n",
+    "    def is_goal(self, node):\n",
+    "        \"\"\"Returns True if the node is the goal, otherwise False\"\"\"\n",
+    "        return\n",
+    "    \n",
+    "    def neighbors(self, node):\n",
+    "        \"\"\"Returns a list of the arcs for the neighbors of node, for example: \n",
+    "        return [Arc(node, to_neighbor_node1, cost1), Arc(node, to_neighbor_node2, cost2)]\"\"\"\n",
+    "        return\n",
+    "    \n",
+    "    def heuristic(self, node):\n",
+    "        \"\"\"Returns the heuristic value of the node \n",
+    "        based on the Manhattan distance\"\"\"\n",
+    "        return "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To validate the correctness of the problem class use the A* searcher algorithm (from searchGeneric.py) to find a solution. \n",
+    "\n",
+    "*Tip: The cost of the solution should be 9.*"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "start = [[1, 2, 3, 4], \n",
+    "         [9, 5, 6, 7], \n",
+    "         [10, 11, 8, 0], \n",
+    "         [13, 14, 15, 12]]\n",
+    "\n",
+    "puzzle = GameFifteenProblem(start, goal)\n",
+    "searcher = AStarSearcher(puzzle)\n",
+    "solution = searcher.search()\n",
+    "print('Cost: ',  solution.cost)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 1.2 \n",
+    "Implement search problem classes representing the Game of Fifteen that use heuristics based on Euclidean Distance (h2) and the number of the inversions of the permutation (h3). The classes must be implemented by extending the class GameFifteenProblem.\n",
+    "\n",
+    "Euclidean distance between two points $p1$ at $(x1, y1)$ and $p2$ at $(x2, y2)$ is $d_{E}(p1, p2) =  \\sqrt{(x1-x2)^{2}+ (y1-y2)^{2}}$\n",
+    "\n",
+    "An inversion of a permutation $(t_{1},t_{2},...,t_{n})$ of the elements in a finite n-element set of positive integers $A=\\{1,2,...,n\\}$ is the pair $(t_{j},t_{k})$, where $j<k$ and $t_{j}>t_{k}$.\n",
+    "\n",
+    "$\\sum_{j=1}^{N} \\sum_{k=j}^{N}    \\{t_{j} > t_{k}: 1, otherwise: 0\\}$, where $N$ is the total number of elements and $t_{i}$ is the value of i-th element."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class GameFifteenProblemEuclidean(GameFifteenProblem):\n",
+    "    def __init__(self, start, goal):\n",
+    "        (super().__init__(start, goal))\n",
+    "\n",
+    "    def heuristic(self, node):\n",
+    "        \"\"\"Returns the heuristic value of the node \n",
+    "        based on the Euclidean distance\"\"\"\n",
+    "        return"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class GameFifteenProblemInversions(GameFifteenProblem):\n",
+    "    def __init__(self, start, goal):\n",
+    "        (super().__init__(start, goal))\n",
+    "\n",
+    "    def heuristic(self, node):\n",
+    "        \"\"\"Returns the heuristic value of the node \n",
+    "        based on the sum of the inversion number of a permutation\"\"\"\n",
+    "        return"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 1.3\n",
+    "Run A* Search algorithm with every heuristic for the following three start states:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# optimal path cost: 14\n",
+    "start14 = [[1, 2, 8, 3],\n",
+    "           [5, 6, 7, 4],\n",
+    "           [9, 15, 14, 11],\n",
+    "           [13, 10, 12, 0]]\n",
+    "\n",
+    "# optimal path cost: 17\n",
+    "start17 = [[1, 3, 6, 4],\n",
+    "           [5, 2, 8, 14],\n",
+    "           [9, 15, 7, 0],\n",
+    "           [13, 10, 12, 11]]\n",
+    "\n",
+    "# optimal path cost: 23\n",
+    "start23 = [[1, 3, 6, 4],\n",
+    "           [5, 8, 15, 14],\n",
+    "           [9, 2, 7, 0],\n",
+    "           [13, 10, 12, 11]]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In each case record in the tables below the heuristic values for the start states, the number of the expanded nodes, and the costs of the solutions."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "| Heuristic | h-value: start14 | h-value: start17 | h-value: start23 |\n",
+    "|-----------|------------------|------------------|------------------|\n",
+    "|Manhattan  | #                | #                | #                | \n",
+    "|Euclidean  | #                | #                | #                | \n",
+    "|Inversions | #                | #                | #                | \n",
+    "\n",
+    "| Heuristic | expanded: start14 | expanded: start17 | expanded: start23 |\n",
+    "|-----------|-------------------|-------------------|-------------------|\n",
+    "|Manhattan  | #                 | #                 | #                 | \n",
+    "|Euclidean  | #                 | #                 | #                 |  \n",
+    "|Inversions | #                 | #                 | #                 |  \n",
+    "\n",
+    "| Heuristic | path cost: start14 | path cost: start17 | path cost: start23 |\n",
+    "|-----------|--------------------|--------------------|--------------------|\n",
+    "|Manhattan  | #                  | #                  | #                  | \n",
+    "|Euclidean  | #                  | #                  | #                  |\n",
+    "|Inversions | #                  | #                  | #                  |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Comment on the performance of the A* search algorithm with each heuristic based on the results in the tables. Explain which heuristic is better/worse and why."
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "metadata": {},
+   "source": [
+    "# answer"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Part 2:  Search algorithms [7 marks]\n",
+    "\n",
+    "*Tip: If you have problems understanding how to overwrite methods take a look at the implementation of AStarSearcher and  Searcher classes in searchGeneric.py*\n",
+    "\n",
+    "*Tip: To initialize the frontier think of the type of structure used by the algorithm to store generated nodes. If it uses a priority queue use FrontierPQ from serachGeneric.py*\n",
+    "\n",
+    "#### Task 2.1\n",
+    "Implement a class that performs Breadth First Search by extending class Searcher."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class BreadthFirstSearcher(Searcher):\n",
+    "    \n",
+    "    def __init__(self,  problem):\n",
+    "        super().__init__(problem)\n",
+    "\n",
+    "    \"\"\" Initializes the forontier \"\"\"\n",
+    "    def initialize_frontier(self):\n",
+    "        return\n",
+    "\n",
+    "    \"\"\" Returns True if there are no more nodes to expand \"\"\"\n",
+    "    def empty_frontier(self):\n",
+    "        return\n",
+    "\n",
+    "    \"\"\" Adds the path to the forontier \"\"\"\n",
+    "    def add_to_frontier(self, path):\n",
+    "        return\n",
+    "    \n",
+    "    \"\"\"returns (next) path from the problem's start node\n",
+    "        to a goal node. \"\"\"\n",
+    "    def search(self):\n",
+    "        return"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 2.2\n",
+    "\n",
+    "Implement a class that performs Iterative Deepening Search by extending class Searcher."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class IterativeDeepeningSearcher(Searcher):\n",
+    "    def __init__(self, problem):\n",
+    "        super().__init__(problem)\n",
+    "\n",
+    "    \"\"\" Initializes the forontier \"\"\"\n",
+    "    def initialize_frontier(self):\n",
+    "        return\n",
+    "\n",
+    "    \"\"\" Returns True if there are no more nodes to expand \"\"\"\n",
+    "    def empty_frontier(self):\n",
+    "        return\n",
+    "\n",
+    "    \"\"\" Adds the path to the forontier \"\"\"\n",
+    "    def add_to_frontier(self, path):\n",
+    "        return\n",
+    "    \n",
+    "    def search(self):\n",
+    "        return"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 2.3\n",
+    "Implement a class that performs Iterative Deepening A* Search by extending class Searcher."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class IterativeDeepeningAStarSearcher(Searcher):\n",
+    "    \"\"\" Initializes the forontier \"\"\"\n",
+    "    def initialize_frontier(self):\n",
+    "        return\n",
+    "\n",
+    "    \"\"\" Returns True if there are no more nodes to expand \"\"\"\n",
+    "    def empty_frontier(self):\n",
+    "        return\n",
+    "\n",
+    "    \"\"\" Adds the path to the forontier \"\"\"\n",
+    "    def add_to_frontier(self, path):\n",
+    "        return\n",
+    "    \n",
+    "    def search(self):\n",
+    "        return"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 2.4\n",
+    "Implement a class that performs Uniform Cost Search by extending class Searcher."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class UniformCostSearcher(Searcher):\n",
+    "    \"\"\" Initializes the forontier \"\"\"\n",
+    "    def initialize_frontier(self):\n",
+    "        return\n",
+    "\n",
+    "    \"\"\" Returns True if there are no more nodes to expand \"\"\"\n",
+    "    def empty_frontier(self):\n",
+    "        return\n",
+    "\n",
+    "    \"\"\" Adds the path to the forontier \"\"\"\n",
+    "    def add_to_frontier(self, path):\n",
+    "        return"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 2.5\n",
+    "\n",
+    "Run Breadth First Search (BFS), Iterative Deepenining Search (IDS), Iterative Deepening A* Search (IDA\\*S), and Uniform Cost Search (UCS) algorithms on each of the 5 start states:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# optimal path cost: 10\n",
+    "start10 = [[2, 3, 7, 4],\n",
+    "           [1, 6, 11, 8],\n",
+    "           [5, 10, 0, 12],\n",
+    "           [9, 13, 14, 15]]\n",
+    "\n",
+    "# optimal path cost: 24\n",
+    "start24 = [[2, 7, 11, 4],\n",
+    "           [6, 3, 12, 0],\n",
+    "           [1, 5, 15, 8],\n",
+    "           [9, 10, 13, 14]]\n",
+    "\n",
+    "# optimal path cost: 30\n",
+    "start30 = [[2, 7, 11, 4],\n",
+    "           [6, 3, 12, 0],\n",
+    "           [1, 5, 15, 14],\n",
+    "           [9, 10, 8, 13]]\n",
+    "\n",
+    "# optimal path cost: 36\n",
+    "start36 = [[7, 11, 12, 4],\n",
+    "           [2, 3, 14, 1],\n",
+    "           [6, 5, 13, 8],\n",
+    "           [9, 10, 15, 0]]\n",
+    "\n",
+    "# optimal path cost: 41\n",
+    "start41 = [[7, 11, 12, 4],\n",
+    "           [2, 3, 8, 14],\n",
+    "           [10, 0, 5, 1],\n",
+    "           [6, 9, 13, 15]]\n",
+    "\n",
+    "# your code"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In each case, record in the table below the number of nodes generated during the search. If the algorithm runs out of memory or the number of nodes in the frontier exceeds 1 million items, just write “Mem” in your table. If the code runs for five minutes without producing output, terminate the process and write “Time” in your table.\n",
+    "\n",
+    "*Tip: To edit the table double click the cell below.*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "| Algorithm | 10      | 24      | 30      | 36      | 41      |\n",
+    "|-----------|---------|---------|---------|---------|---------|\n",
+    "|BFS        | #       | #       | #       | #       | #       |\n",
+    "|A*         | #       | #       | #       | #       | #       |\n",
+    "|IDS        | #       | #       | #       | #       | #       |\n",
+    "|IDA\\*S     | #       | #       | #       | #       | #       |\n",
+    "|UCS        | #       | #       | #       | #       | #       |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Discuss the time and space efficiency of these four algorithms, comment on the results in the table."
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "metadata": {},
+   "source": [
+    "# your answer"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Part 3: Deceptive Starting States [3 marks]\n",
+    "\n",
+    "#### Task 3.1 \n",
+    "\n",
+    "Run IDA* on the starting states below and report the number of the expanded nodes."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "start37_1 = [[7, 11, 12, 4],\n",
+    "             [2, 3, 14, 1],\n",
+    "             [6, 5, 13, 0],\n",
+    "             [9, 10, 15, 8]]\n",
+    "\n",
+    "start37_2 = [[7, 11, 12, 4],\n",
+    "             [2, 3, 8, 14],\n",
+    "             [6, 0, 1, 15],\n",
+    "             [9, 5, 10, 13]]\n",
+    "# your code"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 3.2\n",
+    "\n",
+    "Explain why there is a difference between the number of the expanded nodes for these starting states if their costs of the optimal paths are the same."
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "metadata": {},
+   "source": [
+    "# your answer"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Part 4:  Constraint Satisfaction Problem [5 marks]\n",
+    "\n",
+    "This part of the assignment is based on another puzzle called Sudoku. The game consists of 9x9 grid with a few cells filled in with digits. The objective of the game is to fill the remaining cells so that each column, each row, and each of the nine 3×3 sub-grids contain all of the digits from 1 to 9.\n",
+    "\n",
+    "The start state of the puzzle is defined as a multidimensional array of numbers, where 0 represents empty cells, for example:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "grid = [[9, 5, 0, 8, 2, 7, 3, 0, 0],\n",
+    "        [0, 8, 0, 1, 4, 0, 0, 5, 0],\n",
+    "        [0, 1, 0, 5, 9, 0, 0, 0, 0],\n",
+    "        [8, 3, 0, 0, 0, 0, 0, 7, 5],\n",
+    "        [1, 6, 9, 7, 5, 2, 4, 3, 0],\n",
+    "        [0, 7, 0, 0, 8, 0, 0, 6, 0],\n",
+    "        [0, 9, 1, 0, 6, 0, 8, 4, 0],\n",
+    "        [7, 0, 8, 0, 3, 1, 0, 6, 6],\n",
+    "        [6, 2, 0, 4, 7, 8, 0, 9, 0]]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "*Tip: If you have problems with understanding how to implement constrains take a look at cspExamples.py and cspExamplesQueens.py*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 4.1\n",
+    "\n",
+    "Write the code that defines constraint(s) and a function grid_to_csp that returns a CSP for a Sudoku puzzle:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# define constraint function(s)\n",
+    "\n",
+    "# function that returns a csp\n",
+    "def grid_to_csp(grid):\n",
+    "    domains = {}\n",
+    "    constraints = []\n",
+    "    return CSP(domains, constraints)\n",
+    "\n",
+    "# csp\n",
+    "csp = grid_to_csp(grid)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 4.2\n",
+    "\n",
+    "Write the code that solves Sudoku csp using a search algorithms of your choice, print the solution."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# your code\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Task 4.3\n",
+    "\n",
+    "Descibe what do nodes represent in the search tree. Explain your choice of the search algorithm and compare it with any other search algorithm implemented in this assignemnt. "
+   ]
+  },
+  {
+   "cell_type": "raw",
+   "metadata": {},
+   "source": [
+    "# your answer"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
